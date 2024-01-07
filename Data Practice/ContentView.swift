@@ -10,27 +10,28 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+//    @Query private var items: [Item]
+    @Query private var todos: [Todo]
 
     var body: some View {
         NavigationSplitView {
             List {
-                ForEach(items) { item in
+                ForEach(todos) { todo in
                     NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                        Text(todo.title)
                     } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+                        Text(todo.title)
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: deleteTodos)
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    Button(action: addTodo) {
+                        Label("Add Todo", systemImage: "plus")
                     }
                 }
             }
@@ -39,17 +40,17 @@ struct ContentView: View {
         }
     }
 
-    private func addItem() {
+    private func addTodo() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+            let newTodo = Todo(title: "Take a nap")
+            modelContext.insert(newTodo)
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
+    private func deleteTodos(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(items[index])
+                modelContext.delete(todos[index])
             }
         }
     }
@@ -57,5 +58,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Todo.self, inMemory: true)
 }
